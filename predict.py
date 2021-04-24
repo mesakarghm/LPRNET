@@ -4,26 +4,13 @@ from time import time
 import numpy as np 
 import cv2 
 import os 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import tensorflow as tf 
 
 from model import LPRNet 
 from tensorflow.keras.models import load_model
 from model import LPRNet
 
-
-# from layers import BilinearInterpolation
-import sys 
-sys.path.insert(1,"./py")
-import codecs 
-# from ./py/WordBeamSearch import wordBeamSearch
-# from LanguageModel import LanguageModel
-# from WordBeamSearch import wordBeamSearch
-from word_beam_search import WordBeamSearch
-classnames = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
-
-IMG_SIZE = [94,24]
 
 def run():
 	model = load_model("./saved_models/50r_50g_epoch_400.pb")
@@ -75,5 +62,7 @@ def softmax(mat):
 
 if __name__ == "__main__": 
 	print("Starting program...")
+	classnames = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	IMG_SIZE = [94,24]
 	tf.compat.v1.enable_eager_execution() 
 	run()
