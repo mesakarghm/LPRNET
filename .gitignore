@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+#Unused files for now 
+prediction.py
+freeze_graph_keras.py
+saved_models/
+
+#Test Datasets
+car_video/
+car_video_updated/
+
 # Distribution / packaging
 .Python
 build/
