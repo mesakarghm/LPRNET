@@ -17,7 +17,7 @@ from tensorflow.python.framework import graph_io
 CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 NUM_CLASS = len(CHARS)+1
 
-def train(checkpoint,train_dir = "./train", val_dir="valid",batch_size = 8,val_batch_size = 1, train_epochs = 10000):
+def train(checkpoint,train_dir = "./train", val_dir="valid",batch_size = 8,val_batch_size = 1, train_epochs = 500):
 	net = LPRNet(NUM_CLASS)   #(use for KoreanLPR based model)
 	train_gen = utils.DataIterator(img_dir=train_dir, batch_size = batch_size)
 	val_gen = utils.DataIterator(img_dir=val_dir,batch_size = val_batch_size)
