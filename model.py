@@ -11,7 +11,7 @@ from tensorflow.keras.models import load_model
 
 
 class LPRNet:
-    def __init__(self, num_classes, pattern_size=128, dropout=0.3, input_shape=(24,94, 3),
+    def __init__(self, num_classes, pattern_size=128, dropout=0.5, input_shape=(24,94, 3),
                  include_STN=False):
         self.num_classes = num_classes
         self.pattern_size = pattern_size
@@ -35,8 +35,7 @@ class LPRNet:
         pattern = Conv2D(128, [1,1])(classes)
         x = Concatenate()([classes, pattern])
         outs = conv2D_batchnorm(self.num_classes, [1, 1], padding="same")(x)
-        # x = tf.squeeze(outs,[1])
-        # outs = Softmax()(x) 
+
         return Model(inputs = inputs, outputs = outs)
 
     @staticmethod
@@ -51,23 +50,7 @@ class LPRNet:
 
 
 
-    def locnet(self):
-        b = np.zeros((2, 3), dtype='float32')
-        b[0, 0] = 1
-        b[1, 1] = 1
-        W = np.zeros((64, 6), dtype='float32')
-        weights = [W, b.flatten()]
-        locnet = Sequential()
-        locnet.add(Conv2D(20, (5, 5), padding='valid',input_shape=(24,94,3)))
-        locnet.add(Conv2D(20, (5,5), padding='valid'))
 
-        locnet.add(Flatten())
-        locnet.add(Dense(128))
-        locnet.add(Activation('sigmoid'))
-        locnet.add(Dense(64))
-        locnet.add(Activation('sigmoid'))
-        locnet.add(Dense(6, weights=weights))
-        return locnet
 
     def mixed_input_block(self):
         return Sequential([conv2D_batchnorm(64, [3, 3], padding="same"),

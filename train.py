@@ -39,6 +39,10 @@ def train():
 	else: 
 		BATCH_PER_EPOCH = int(math.ceil(train_len/batch_size))
 
+	#initialize tensorboard
+	tensorboard = keras.callbacks.TensorBoard(log_dir = 'tmp/my_tf_logs',histogram_freq = 0,
+		batch_size = batch_size, write_graph = True)
+
 	val_batch_len = int(math.floor(val_len / val_batch_size))  
 	evaluator = evaluate.Evaluator(val_gen,net, CHARS,val_batch_len, val_batch_size)
 	best_val_loss = float("inf")
@@ -49,6 +53,7 @@ def train():
 
 
 	model = net.model
+	tensorboard.set_model(model)
 
 	#initialize the learning rate
 	learning_rate = keras.optimizers.schedules.ExponentialDecay(args["lr"],
@@ -99,16 +104,17 @@ def train():
 				ctc_loss = tf.nn.ctc_loss(labels = train_targets, inputs = logits, sequence_length = seq_len)
 				loss_value =tf.reduce_mean(ctc_loss)
 
-  
+
+  	
 			#Calculate Gradients and Update it 
 			grads = tape.gradient(ctc_loss, model.trainable_weights,unconnected_gradients=tf.UnconnectedGradients.NONE)
 			optimizer.apply_gradients(zip(grads, model.trainable_weights))
 			train_loss += float(loss_value)
 
+
 		tim = time.time() - start_time
 
 		print("Train loss {}, time {} \n".format(float(train_loss/BATCH_PER_EPOCH),tim))
-
 		#run a validation loop in every 25 epoch
 		if epoch != 0 and epoch%25 == 0:
 			val_loss = evaluator.evaluate()
@@ -121,16 +127,21 @@ def train():
 			else: 
 				print("Validation loss is greater than best_val_loss ")
 
-			if epoch %100 == 0: 
-				net.save(os.path.join(args["saved_dir"], f"new_out_model_last_{epoch}.pb"))
+			# if epoch %500 == 0: 
+			# 	net.save(os.path.join(args["saved_dir"], f"new_out_model_last_{epoch}.pb"))
 
 
 
 
 	net.save(os.path.join(args["saved_dir"], "new_out_model_last.pb"))
 	print("Final Weights saved in {}/{}".format(args["saved_dir"], "new_out_model_last.pb"))
+	tensorboard.on_train_end(None)
 
-
+def named_logs(model, logs):
+  result = {}
+  for l in zip(model.metrics_names, logs):
+    result[l[0]] = l[1]
+  return result
 
 def parser_args():
 	"""
@@ -138,8 +149,8 @@ def parser_args():
 	"""
 	parser = argparse.ArgumentParser()
 
-	parser.add_argument("--train_dir",default = "./car_video", help = "path to the train directory",)
-	parser.add_argument("--val_dir",default = "./car_video", help = "path to the validation directory")
+	parser.add_argument("--train_dir",default = "./train", help = "path to the train directory",)
+	parser.add_argument("--val_dir",default = "./valid", help = "path to the validation directory")
 
 	parser.add_argument("--train_epochs", type = int, help = "number of training epochs", default = 1000)
 	parser.add_argument("--batch_size", type = int,default = 8, help = "batch size (train)")

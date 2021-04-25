@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#Tensorboard 
+tmp/
+
 #Unused files for now 
 prediction.py
 freeze_graph_keras.py
