@@ -19,11 +19,11 @@ def run():
 	cnt = 0
 
 	#loop through all the files in the test folder
-	for filename in os.listdir("./samples"): 
+	for filename in os.listdir("./images/samples"): 
 		#check if the file is an image
 		if filename.endswith(".jpg") or filename.endswith(".JPG"): 
 			#read the file and preprocess it 
-			frame = cv2.imread(f"./samples/{filename}")
+			frame = cv2.imread(f"./images/samples/{filename}")
 			img = cv2.resize(frame, (94,24))
 			img = np.expand_dims(img,axis = 0)
 			#get the output sequence
