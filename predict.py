@@ -9,24 +9,31 @@ import tensorflow as tf
 
 from model import LPRNet 
 from tensorflow.keras.models import load_model
-from model import LPRNet
-
 
 def run():
-	model = load_model("./saved_models/50r_50g_epoch_400.pb")
+	#load the KERAS model
+	model = load_model("./saved_models/new_out_model_last.pb")
 	print("Loaded Weights successfully")
 	print("Actual Label \t Predicted Label ")
 	start_time = time()
 	cnt = 0
+
+	#loop through all the files in the test folder
 	for filename in os.listdir("./samples"): 
+		#check if the file is an image
 		if filename.endswith(".jpg") or filename.endswith(".JPG"): 
+			#read the file and preprocess it 
 			frame = cv2.imread(f"./samples/{filename}")
 			img = cv2.resize(frame, (94,24))
 			img = np.expand_dims(img,axis = 0)
+			#get the output sequence
 			pred = model.predict(img)
+
+			#decode the output sequence using keras ctc decode 
 			result_ctc = decode_pred(pred, classnames)
 			original_label = filename.split("_")[0]
 
+			#print the original sequence and the decoded sequence
 			print(original_label,"\t",result_ctc[0].decode('utf-8'))
 			cnt+=1
 	print("total time taken :", time()-start_time)
@@ -49,16 +56,6 @@ def decode_pred(pred,classnames):
 	return results
 
 
-def softmax(mat):
-		"calc softmax such that labels per time-step form probability distribution"
-		maxT, _ = mat.shape[:2]
-		res = np.zeros(mat.shape)
-		for t in range(maxT):
-			y = mat[t, :]
-			e = np.exp(y)
-			s = np.sum(e)
-			res[t, :] = e/s
-		return res
 
 if __name__ == "__main__": 
 	print("Starting program...")

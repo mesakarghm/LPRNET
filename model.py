@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras import Sequential, Model
-from tensorflow.keras.layers import Activation,Conv2D, BatchNormalization, MaxPool2D,   Dropout, Input, ReLU, \
+from tensorflow.keras.layers import Activation,Conv2D, BatchNormalization, MaxPool2D,Softmax,Dropout, Input, ReLU, \
     Concatenate, Dense, Flatten
 from tensorflow.keras.models import load_model
 
@@ -34,8 +34,10 @@ class LPRNet:
         classes = conv2D_batchnorm(self.num_classes, [1, 13], padding="same")(x)
         pattern = Conv2D(128, [1,1])(classes)
         x = Concatenate()([classes, pattern])
-        logits = conv2D_batchnorm(self.num_classes, [1, 1], padding="same")(x)
-        return Model(inputs = inputs, outputs = logits)
+        outs = conv2D_batchnorm(self.num_classes, [1, 1], padding="same")(x)
+        # x = tf.squeeze(outs,[1])
+        # outs = Softmax()(x) 
+        return Model(inputs = inputs, outputs = outs)
 
     @staticmethod
     def basic_blocks(channel_in, channel_out):

@@ -86,7 +86,6 @@ class Evaluator:
             seq_len = tf.fill([logits_shape[0]],logits_shape[1])
             logits = tf.transpose(logits, (1,0,2))
             loss_value = tf.reduce_mean(tf.nn.ctc_loss(labels = val_targets, inputs = logits, sequence_length = seq_len ))
-            
             # print("Loss: {} - CER: {}, WER:{}\n".format(float(loss_value),CER,WER))
             self.losses.append(float(loss_value))
             self.CERs.append(CER)
@@ -95,3 +94,4 @@ class Evaluator:
         cer = self._average(self.CERs)
         wer = self._average(self.WERs)
         self._print_result(loss,cer,wer)
+        return(loss)
